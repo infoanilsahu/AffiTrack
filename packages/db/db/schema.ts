@@ -4,7 +4,7 @@ export const Providers = pgEnum("provider",["google", "email"])
 
 export const account = pgTable("Account", {
     id: uuid().defaultRandom().primaryKey(),
-    email: varchar().notNull(),
+    email: varchar().notNull().unique(),
     provider: Providers().notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

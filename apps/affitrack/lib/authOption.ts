@@ -23,8 +23,6 @@ export const authOptions: AuthOptions = {
           return false;
         }
 
-        console.log("Google email:", user.email);
-
         const dbEmail = await db
           .select({
             email: schema.account.email,
@@ -35,7 +33,6 @@ export const authOptions: AuthOptions = {
           )
           .limit(1);
 
-        console.log("Existing account:", dbEmail);
 
         if (dbEmail.length === 0) {
           await db.insert(schema.account).values({
@@ -43,7 +40,6 @@ export const authOptions: AuthOptions = {
             provider: "google",
           });
 
-          console.log("Created account:", user.email);
         }
 
         return true;
