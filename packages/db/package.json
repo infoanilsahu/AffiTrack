@@ -16,12 +16,13 @@
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/pg": "^8.20.4",
-    "drizzle-kit": "^1.0.0-rc.4",
+    "drizzle-kit": "^0.31.4",
     "tsx": "^4.23.9"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "drizzle-orm": "^1.0.0-rc.4",
+    "drizzle-orm": "^0.45.2",
+    "next-auth": "^4.24.15",
     "pg": "^8.22.0"
   }
 }

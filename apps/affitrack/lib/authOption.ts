@@ -1,52 +1,89 @@
 import { type AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import EmailProvider from "next-auth/providers/email";
 import { db, schema, orm } from "@repo/db";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+
 
 export const authOptions: AuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
 
-  secret: process.env.NEXTAUTH_SECRET,
+    adapter: DrizzleAdapter(db),
 
-  callbacks: {
-    async signIn({ account, user }) {
-      try {
-        if (account?.provider !== "google") {
-          return true;
+    providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        }),
+        EmailProvider({
+            server: process.env.EMAIL_SERVER!,
+            from: process.env.EMAIL_FROM!,
+        }),
+    ],
+
+    secret: process.env.NEXTAUTH_SECRET,
+
+    callbacks: {
+        async signIn({ account, user }) {
+            try {
+            if (account?.provider === "google") {
+                if (!user?.email) {
+                    return false;
+                }
+    
+                const dbEmail = await db
+                    .select({
+                    email: schema.appAccount.email,
+                    })
+                    .from(schema.appAccount)
+                    .where(
+                    orm.eq(schema.appAccount.email, user.email)
+                    )
+                    .limit(1);
+    
+    
+                if (dbEmail.length === 0) {
+                    await db.insert(schema.appAccount).values({
+                    email: user.email,
+                    provider: "google",
+                    });
+    
+                }
+    
+                return true;
+            }
+
+            if( account?.provider === "email" ) {
+                if( !user?.email ) {
+                    return false
+                }
+
+                console.log("user give email: ", user.email);
+
+                return true;
+            }
+
+            return true;
+
+            } catch (error) {
+            console.error("Google sign-in database error:", error);
+            return false;
+            }
+        },
+
+        async jwt({ token, user }) {
+            if( user ) {
+                token.id = user.id
+            }
+
+            return token
+        },
+
+        async session({token, session}) {
+            if( session.user ) {
+                session.user.id = token.id
+            }
+            return session
         }
 
-        if (!user?.email) {
-          return false;
-        }
-
-        const dbEmail = await db
-          .select({
-            email: schema.account.email,
-          })
-          .from(schema.account)
-          .where(
-            orm.eq(schema.account.email, user.email)
-          )
-          .limit(1);
-
-
-        if (dbEmail.length === 0) {
-          await db.insert(schema.account).values({
-            email: user.email,
-            provider: "google",
-          });
-
-        }
-
-        return true;
-      } catch (error) {
-        console.error("Google sign-in database error:", error);
-        return false;
-      }
     },
-  },
 };
