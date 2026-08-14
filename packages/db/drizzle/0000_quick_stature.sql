@@ -10,8 +10,7 @@ CREATE TABLE "account" (
 	"token_type" text,
 	"scope" text,
 	"id_token" text,
-	"session_state" text,
-	PRIMARY KEY ("provider", "providerAccountId")
+	"session_state" text
 );
 --> statement-breakpoint
 CREATE TABLE "app_account" (
