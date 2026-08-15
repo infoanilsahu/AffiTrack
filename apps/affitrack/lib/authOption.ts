@@ -9,6 +9,10 @@ export const authOptions: AuthOptions = {
 
     adapter: DrizzleAdapter(db),
 
+    session: {
+        strategy: "jwt"
+    },
+    
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -23,8 +27,12 @@ export const authOptions: AuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
 
     callbacks: {
-        async signIn({ account, user }) {
+        async signIn({ account, user, email }) {
             try {
+                // Return early if it's an email verification request
+                if (email?.verificationRequest) {
+                    return true;
+                }
             if (account?.provider === "google") {
                 if (!user?.email) {
                     return false;
@@ -57,7 +65,24 @@ export const authOptions: AuthOptions = {
                     return false
                 }
 
-                console.log("user give email: ", user.email);
+                const dbEmail = await db
+                    .select({
+                    email: schema.appAccount.email,
+                    })
+                    .from(schema.appAccount)
+                    .where(
+                    orm.eq(schema.appAccount.email, user.email)
+                    )
+                    .limit(1);
+    
+    
+                if (dbEmail.length === 0) {
+                    await db.insert(schema.appAccount).values({
+                    email: user.email,
+                    provider: "email",
+                    });
+    
+                }
 
                 return true;
             }
@@ -78,8 +103,8 @@ export const authOptions: AuthOptions = {
             return token
         },
 
-        async session({token, session}) {
-            if( session.user ) {
+        async session({token, session}) {            
+            if( session.user && token.id ) {
                 session.user.id = token.id
             }
             return session
