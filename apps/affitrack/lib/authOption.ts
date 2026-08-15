@@ -29,6 +29,10 @@ export const authOptions: AuthOptions = {
     callbacks: {
         async signIn({ account, user, email }) {
             try {
+                // Return early if it's an email verification request
+                if (email?.verificationRequest) {
+                    return true;
+                }
             if (account?.provider === "google") {
                 if (!user?.email) {
                     return false;
@@ -75,7 +79,7 @@ export const authOptions: AuthOptions = {
                 if (dbEmail.length === 0) {
                     await db.insert(schema.appAccount).values({
                     email: user.email,
-                    provider: "google",
+                    provider: "email",
                     });
     
                 }
