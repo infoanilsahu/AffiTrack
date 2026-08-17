@@ -9,17 +9,25 @@ export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
     if( session && pathname == '/signin' ) {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
+        return NextResponse.redirect(new URL('/org', request.url))
     }
 
-    if( !session && pathname == '/dashboard' ) {
+    if( !session && pathname.endsWith('/links') ) {
         return NextResponse.redirect(new URL('/signin', request.url))
     }
+
+    if( !session && pathname.startsWith("/org") ) {
+      return NextResponse.redirect(new URL('/signin', request.url))
+    }
+
 }
- 
+
 export const config = {
   matcher: [
+    '/',
     '/signin',
     '/dashboard',
+    '/org/:path',
+    '/:slug/links'
   ],
 }
