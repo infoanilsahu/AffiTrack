@@ -21,14 +21,14 @@ export default function SignInPage() {
                 <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} className="p-1 border rounded-lg" />
 
                 <button 
-                onClick={() => signIn("email",{email, callbackUrl: "/dashboard"})}
+                onClick={() => signIn("email",{email, callbackUrl: "/org"})}
                 className="rounded-sm p-0.5 px-2 m-1 bg-black text-white"
                 >
                     Sing In
                 </button>
 
                 <button
-                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+                onClick={() => signIn("google", { callbackUrl: "/org" })}
                 className="w-full mt-6 border rounded-lg py-3"
                 >
                 Continue with Google

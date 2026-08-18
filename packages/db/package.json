@@ -22,6 +22,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.45.2",
+    "nanoid": "^3.3.16",
     "next-auth": "^4.24.15",
     "pg": "^8.22.0"
   }

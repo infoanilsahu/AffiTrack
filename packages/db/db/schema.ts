@@ -70,6 +70,7 @@ export const org = pgTable("org", {
     accountId: uuid("account_id")
         .notNull()
         .references(() => appAccount.id, { onDelete: "cascade" }),
+    orgSlug: varchar("slug", {length: 255}).notNull().unique(),
     createdAt: timestamp("created_at", { withTimezone: false }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow().notNull(),
 });
