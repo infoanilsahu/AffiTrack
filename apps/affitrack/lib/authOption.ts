@@ -40,19 +40,19 @@ export const authOptions: AuthOptions = {
     
                 const dbEmail = await db
                     .select({
-                    email: schema.appAccount.email,
+                        email: schema.appAccount.email,
                     })
                     .from(schema.appAccount)
                     .where(
-                    orm.eq(schema.appAccount.email, user.email)
+                        orm.eq(schema.appAccount.email, user.email)
                     )
                     .limit(1);
     
     
                 if (dbEmail.length === 0) {
                     await db.insert(schema.appAccount).values({
-                    email: user.email,
-                    provider: "google",
+                        email: user.email,
+                        provider: "google",
                     });
     
                 }

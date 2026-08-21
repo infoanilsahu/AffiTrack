@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client } from "../../../lib/redis";
+import { client } from "../../lib/redis";
 
 export async function GET(req: NextRequest) {
     await client.lPush(

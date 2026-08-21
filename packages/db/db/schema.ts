@@ -1,4 +1,5 @@
 import { pgTable, uuid, varchar, pgEnum, timestamp, text, integer, primaryKey } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { AdapterAccount } from "next-auth/adapters";
 
 
@@ -74,3 +75,16 @@ export const org = pgTable("org", {
     createdAt: timestamp("created_at", { withTimezone: false }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow().notNull(),
 });
+
+export const link = pgTable("links", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    linkSlug: varchar("slug", { length: 10 })
+        .notNull()
+        .unique()
+        .$defaultFn(() => nanoid(10)),
+    destinationUrl: text("url").notNull(),
+    ordId: uuid("org_id").notNull()
+        .references(() => org.id, {onDelete: "cascade"})
+});
+
+

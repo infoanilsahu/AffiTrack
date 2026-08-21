@@ -24,19 +24,11 @@ export async function POST(req: NextRequest) {
         
         const id = nanoid.nanoid(10)
         
-        console.log("db insert check");
-        console.log("user.id:", user.id);
-        console.log("user.id type :", typeof user.id);
-        console.log("orgName:", orgName);
-        console.log("orgSlug:", id);
-        
         const [newOrg] = await db.insert(schema.org).values({
             name: orgName,
             accountId: user.id,
             orgSlug: id
         }).returning()
-
-        console.log("db new org ", newOrg);
         
 
 
